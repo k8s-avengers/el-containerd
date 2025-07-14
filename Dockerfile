@@ -4,10 +4,15 @@ FROM ${BASE_IMAGE} AS build
 ARG OS_ARCH="arm64"
 ARG GOLANG_VERSION="1.24.5"
 
+ARG RUNC_VERSION="v1.3.0"
+ARG CONTAINERD_VERSION="v2.1.3"
+ARG NERDCTL_VERSION="v2.1.3"
+
+
 # runc cgo-links libseccomp-devel directly
 # gcc is thus required to build runc
 RUN dnf -y update && \
-    dnf -y install git bash wget make gcc rpm-build rpmdevtools libseccomp-devel
+    dnf -y install tree git bash wget make gcc rpm-build rpmdevtools libseccomp-devel
 
 SHELL ["/bin/bash", "-e", "-c"]
 
@@ -19,7 +24,7 @@ RUN go version
 # Build runc from source; it defaults to having symbols
 FROM build AS runc
 WORKDIR /src
-ARG RUNC_VERSION="v1.3.0"
+ARG RUNC_VERSION
 RUN git -c advice.detachedHead=false clone --depth=1  --single-branch --branch=${RUNC_VERSION} https://github.com/opencontainers/runc /src/runc
 WORKDIR /src/runc
 RUN make
@@ -27,7 +32,7 @@ RUN make
 # Build containerd from source; enable GODEBUG so it has symbols
 FROM build AS containerd
 WORKDIR /src
-ARG CONTAINERD_VERSION="v2.1.3"
+ARG CONTAINERD_VERSION
 RUN git -c advice.detachedHead=false clone --depth=1  --single-branch --branch=${CONTAINERD_VERSION} https://github.com/containerd/containerd /src/containerd
 WORKDIR /src/containerd
 RUN BUILDTAGS=no_btrfs GODEBUG=yes make
@@ -35,7 +40,7 @@ RUN BUILDTAGS=no_btrfs GODEBUG=yes make
 # Build nerdctl from source; it defaults to having symbols
 FROM build AS nerdctl
 WORKDIR /src
-ARG NERDCTL_VERSION="v2.1.3"
+ARG NERDCTL_VERSION
 RUN git -c advice.detachedHead=false clone --depth=1  --single-branch --branch=${NERDCTL_VERSION} https://github.com/containerd/nerdctl /src/nerdctl
 WORKDIR /src/nerdctl
 RUN make
@@ -62,10 +67,32 @@ RUN ldd  /out/usr/bin/runc
 RUN ldd  /out/usr/bin/containerd
 # static RUN ldd /out/usr/bin/nerdctl # static
 
+WORKDIR /pkg
+RUN rpmdev-setuptree
+RUN tree /root/rpmbuild
+
+# copy the binaries to the rpmbuild SOURCES directory
+RUN cp -prv /out/usr/bin/* /root/rpmbuild/SOURCES/
+
+# add the spec file for the rpm package
+COPY rpm/el-containerd.spec /root/rpmbuild/SPECS/el-containerd.spec
+# add the systemd service file for containerd
+COPY rpm/containerd.service /root/rpmbuild/SOURCES/containerd.service
+
+RUN tree /root/rpmbuild
+
+# build the rpm package
+ARG RUNC_VERSION
+ARG CONTAINERD_VERSION
+ARG NERDCTL_VERSION
+
+RUN rpmbuild -bb /root/rpmbuild/SPECS/el-containerd.spec --define "_topdir /root/rpmbuild" --define "OS_ARCH ${OS_ARCH}" --define "CONTAINERD_VERSION ${CONTAINERD_VERSION}" --define "NERDCTL_VERSION ${NERDCTL_VERSION}" --define "RUNC_VERSION ${RUNC_VERSION}"
+RUN tree /root/rpmbuild
+
 
 # Now prepare the real output: a tarball of /out, and the rpm package
 WORKDIR /artifacts
-#RUN cp -v /pkg/*.deb k8s-worker-containerd_${OS_ARCH}_$(lsb_release -c -s).deb
+RUN cp -v /root/rpmbuild/RPMS/*/*.rpm /artifacts/
 WORKDIR /out
 RUN tar czvf /artifacts/el-containerd_${OS_ARCH}_$(cat /etc/os-release | grep "^PLATFORM_ID" | cut -d "\"" -f 2 | cut -d ":" -f 2).tar.gz *
 
