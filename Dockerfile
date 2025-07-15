@@ -2,6 +2,7 @@ ARG BASE_IMAGE="rockylinux/rockylinux:9"
 FROM ${BASE_IMAGE} AS build
 
 ARG OS_ARCH="arm64"
+ARG TOOLCHAIN_ARCH="aarch64"
 ARG GOLANG_VERSION="1.24.5"
 
 ARG RUNC_VERSION="v1.3.0"
@@ -85,8 +86,9 @@ RUN tree /root/rpmbuild
 ARG RUNC_VERSION
 ARG CONTAINERD_VERSION
 ARG NERDCTL_VERSION
+ARG TOOLCHAIN_ARCH
 
-RUN rpmbuild -bb /root/rpmbuild/SPECS/el-containerd.spec --define "_topdir /root/rpmbuild" --define "OS_ARCH ${OS_ARCH}" --define "CONTAINERD_VERSION ${CONTAINERD_VERSION}" --define "NERDCTL_VERSION ${NERDCTL_VERSION}" --define "RUNC_VERSION ${RUNC_VERSION}"
+RUN rpmbuild -bb /root/rpmbuild/SPECS/el-containerd.spec --define "_topdir /root/rpmbuild" --define "OS_ARCH ${OS_ARCH}" --define "CONTAINERD_VERSION ${CONTAINERD_VERSION}" --define "NERDCTL_VERSION ${NERDCTL_VERSION}" --define "RUNC_VERSION ${RUNC_VERSION}" --define "TOOLCHAIN_ARCH ${TOOLCHAIN_ARCH}"
 RUN tree /root/rpmbuild
 
 

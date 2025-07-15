@@ -13,7 +13,7 @@ Source3:        ctr
 Source4:        runc
 Source5:        nerdctl
 
-BuildArch:      aarch64
+BuildArch:      %{TOOLCHAIN_ARCH}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -21,7 +21,7 @@ Requires(postun): systemd
 Provides:       containerd.io
 
 %description
-This package provides containerd %{CONTAINERD_VERSION} and runc %{RUNC_VERSION} and nerdctl %{NERDCTL_VERSION}.
+containerd %{CONTAINERD_VERSION} runc %{RUNC_VERSION} nerdctl %{NERDCTL_VERSION} for arch %{TOOLCHAIN_ARCH} for %{?dist}
 
 %prep
 # Nothing.

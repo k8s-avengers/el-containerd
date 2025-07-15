@@ -24,8 +24,13 @@ jobs:
     strategy:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
-        arch: [ { name: 'amd64', runner: 'ubuntu-latest' } , { name: 'arm64', runner: 'ubuntu-24.04-arm' } ]
-        distro: [ { id: "el8", image: 'rockylinux/rockylinux:8' }, { id: "el9", image: 'rockylinux/rockylinux:9' }, { id: "el10", image: 'rockylinux/rockylinux:10' } ]
+        arch:
+          - { name: 'amd64', toolchain_arch: "aarch64", runner: 'ubuntu-latest' }
+          - { name: 'arm64', toolchain_arch: "x86_64", runner: 'ubuntu-24.04-arm' }
+        distro:
+          - { id: "el8", image: 'rockylinux/rockylinux:8' }
+          - { id: "el9", image: 'rockylinux/rockylinux:9' }
+          - { id: "el10", image: 'rockylinux/rockylinux:10' }
     steps:
 
       - name: Checkout
@@ -48,16 +53,17 @@ jobs:
           load: true
           pull: true # bring in updated versions of preexisting GH images
           push: false
-          tags: k8s-worker-containerd:${{ matrix.arch.name }}
+          tags: el-containerd:${{ matrix.arch.name }}
           cache-from: type=gha,scope=${{ matrix.arch.name }}_${{ matrix.distro.image }}
           cache-to: type=gha,scope=${{ matrix.arch.name }}_${{ matrix.distro.image }}
           build-args: |
             PACKAGE_VERSION=${{needs.prepare.outputs.created}}
             BASE_IMAGE=${{ matrix.distro.image }}
             OS_ARCH=${{ matrix.arch.name }}
+            TOOLCHAIN_ARCH=${{ matrix.arch.toolchain_arch }}
 
       - name: Extract artifacts from docker ${{ matrix.arch.name }} ${{ matrix.distro.image }}
-        run: docker cp $(docker create --rm k8s-worker-containerd:${{ matrix.arch.name }}):/out ./
+        run: docker cp $(docker create --rm el-containerd:${{ matrix.arch.name }}):/out ./
 
       - name: Upload rpm as artifact ${{ matrix.arch.name }} ${{ matrix.distro.id }}
         uses: actions/upload-artifact@v4
