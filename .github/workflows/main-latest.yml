@@ -25,8 +25,8 @@ jobs:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
         arch:
-          - { name: 'amd64', toolchain_arch: "aarch64", runner: 'ubuntu-latest' }
-          - { name: 'arm64', toolchain_arch: "x86_64", runner: 'ubuntu-24.04-arm' }
+          - { name: 'amd64', toolchain_arch: "x86_64", runner: 'ubuntu-latest' }
+          - { name: 'arm64', toolchain_arch: "aarch64", runner: 'ubuntu-24.04-arm' }
         distro:
           - { id: "el8", image: 'rockylinux/rockylinux:8' }
           - { id: "el9", image: 'rockylinux/rockylinux:9' }
