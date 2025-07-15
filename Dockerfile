@@ -13,7 +13,7 @@ ARG NERDCTL_VERSION="v2.1.3"
 # runc cgo-links libseccomp-devel directly
 # gcc is thus required to build runc
 RUN dnf -y update && \
-    dnf -y install tree git bash wget make gcc rpm-build rpmdevtools libseccomp-devel
+    dnf -y install tree git bash wget make gcc rpm-build rpmdevtools libseccomp-devel systemd-rpm-macros
 
 SHELL ["/bin/bash", "-e", "-c"]
 

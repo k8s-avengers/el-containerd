@@ -24,7 +24,6 @@ jobs:
 
   build:
     needs: [ prepare ]
-    runs-on: ${{ matrix.arch.runner }}
     strategy:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
@@ -35,6 +34,8 @@ jobs:
           - { id: "el8", image: 'rockylinux/rockylinux:8' }
           - { id: "el9", image: 'rockylinux/rockylinux:9' }
           - { id: "el10", image: 'rockylinux/rockylinux:10' }
+    name: build ${{ matrix.arch.name }} ${{ matrix.distro.id }}
+    runs-on: ${{ matrix.arch.runner }}
     steps:
 
       - name: Checkout
