@@ -91,6 +91,11 @@ ARG TOOLCHAIN_ARCH
 RUN rpmbuild -bb /root/rpmbuild/SPECS/el-containerd.spec --define "_topdir /root/rpmbuild" --define "OS_ARCH ${OS_ARCH}" --define "CONTAINERD_VERSION ${CONTAINERD_VERSION}" --define "NERDCTL_VERSION ${NERDCTL_VERSION}" --define "RUNC_VERSION ${RUNC_VERSION}" --define "TOOLCHAIN_ARCH ${TOOLCHAIN_ARCH}"
 RUN tree /root/rpmbuild
 
+# Show metadata of the built rpm package
+RUN rpm -qip /root/rpmbuild/RPMS/*/*.rpm
+RUN rpm -qlp /root/rpmbuild/RPMS/*/*.rpm
+RUN rpm -qRp /root/rpmbuild/RPMS/*/*.rpm
+RUN rpm -q --provides -p /root/rpmbuild/RPMS/*/*.rpm
 
 # Now prepare the real output: a tarball of /out, and the rpm package
 WORKDIR /artifacts

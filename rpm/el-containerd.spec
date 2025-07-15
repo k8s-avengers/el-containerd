@@ -1,7 +1,7 @@
 Name:           el-containerd
 Version:        %{CONTAINERD_VERSION}+%{RUNC_VERSION}
 Release:        1%{?dist}
-Summary:        containerd runtime + runc
+Summary:        containerd runtime + runc + nerdctl for arch %{TOOLCHAIN_ARCH}%{?dist}
 License:        Apache-2.0
 URL:            https://containerd.io
 
@@ -21,7 +21,7 @@ Requires(postun): systemd
 Provides:       containerd.io
 
 %description
-containerd %{CONTAINERD_VERSION} runc %{RUNC_VERSION} nerdctl %{NERDCTL_VERSION} for arch %{TOOLCHAIN_ARCH} for %{?dist}
+containerd %{CONTAINERD_VERSION} runc %{RUNC_VERSION} nerdctl %{NERDCTL_VERSION} for %{TOOLCHAIN_ARCH}%{?dist}
 
 %prep
 # Nothing.
