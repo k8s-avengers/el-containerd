@@ -96,6 +96,8 @@ RUN rpm -qip /root/rpmbuild/RPMS/*/*.rpm
 RUN rpm -qlp /root/rpmbuild/RPMS/*/*.rpm
 RUN rpm -qRp /root/rpmbuild/RPMS/*/*.rpm
 RUN rpm -q --provides -p /root/rpmbuild/RPMS/*/*.rpm
+# Show the scriptlets
+RUN rpm -q --scripts -p /root/rpmbuild/RPMS/*/*.rpm
 
 # Now prepare the real output: a tarball of /out, and the rpm package
 WORKDIR /artifacts

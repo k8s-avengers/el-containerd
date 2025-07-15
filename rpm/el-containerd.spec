@@ -14,6 +14,7 @@ Source4:        runc
 Source5:        nerdctl
 
 BuildArch:      %{TOOLCHAIN_ARCH}
+BuildRequires: systemd-rpm-macros
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -41,12 +42,15 @@ install -D -m 0755 %{SOURCE5} %{buildroot}/usr/bin/nerdctl
 install -D -m 0644 %{SOURCE2} %{buildroot}/usr/lib/systemd/system/containerd.service
 
 %post
+set -x
 %systemd_post containerd.service
 
 %preun
+set -x
 %systemd_preun containerd.service
 
 %postun
+set -x
 %systemd_postun containerd.service
 
 %files
