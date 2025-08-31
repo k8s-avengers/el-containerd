@@ -5,7 +5,7 @@ ARG OS_ARCH="arm64"
 ARG TOOLCHAIN_ARCH="aarch64"
 
 # See https://go.dev/dl/
-ARG GOLANG_VERSION="1.24.5"
+ARG GOLANG_VERSION="1.24.6"
 # See https://github.com/opencontainers/runc
 ARG RUNC_VERSION="v1.3.0"
 # See https://github.com/containerd/containerd
