@@ -5,13 +5,13 @@ ARG OS_ARCH="arm64"
 ARG TOOLCHAIN_ARCH="aarch64"
 
 # See https://go.dev/dl/
-ARG GOLANG_VERSION="1.24.6"
+ARG GOLANG_VERSION="1.24.7"
 # See https://github.com/opencontainers/runc
-ARG RUNC_VERSION="v1.3.0"
+ARG RUNC_VERSION="v1.3.1"
 # See https://github.com/containerd/containerd
 ARG CONTAINERD_VERSION="v2.1.4"
 # See https://github.com/containerd/nerdctl
-ARG NERDCTL_VERSION="v2.1.3"
+ARG NERDCTL_VERSION="v2.1.4"
 
 
 # runc cgo-links libseccomp-devel directly
